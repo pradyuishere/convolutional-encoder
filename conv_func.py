@@ -11,7 +11,10 @@ def padding (img, dimx, dimy):
 
     img_out = np.zeros((dimy, dimx, img.shape[2]))
 
-    img_out[dimy_top:dimy-dimy_down, dimx_left: dimx-dimx_right, :] = img
+    # img_out[dimy_top:dimy-dimy_down, dimx_left: dimx-dimx_right, :] = img
+    for iter in range(img.shape[0]):
+        for iter2 in range(img.shape[1]):
+            img_out[dimy_top+iter, dimx_left+iter2, :] = img[iter, iter2]
 
     return img_out
 
