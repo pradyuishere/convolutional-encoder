@@ -20,8 +20,7 @@ def padding (img, dimx, dimy):
  #	     print(img_out[iter+dimy_top, iter2+dimx_left, :])
     print(img.dtype)
 
-    return img_out.astype(int)
-
+    return img_out
 
 def conv2d (input_img, ker, nonlinear_func, stride=(1,1), padding='same'):
     if padding =='same':
@@ -29,7 +28,7 @@ def conv2d (input_img, ker, nonlinear_func, stride=(1,1), padding='same'):
         dimx = stride[1]*(input_img.shape[1]-1)+ker.shape[1]
         img_padded = padding(img, dimx, dimy)
 ##
-img = mpimg.imread('img.jpg')
-img_out = padding(img, img.shape[1], img.shape[0])
+img = mpimg.imread('image.png')
+img_out = padding(img, img.shape[1]+10, img.shape[0]+1000)
 plt.imshow(img_out)
 plt.show()
