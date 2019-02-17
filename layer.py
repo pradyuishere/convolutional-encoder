@@ -23,12 +23,12 @@ def conv_layer(input_img, num_kernels, nonlinear_func, kernels, stride = (1, 1),
 ################################################################################
 ##Remember to give it and array of images, not a 3 dim input, array of 2d inputs
 def pool_layer(input_img, pool_func, pool_window=(1,1), stride = (1,1)):
-    dimy = input_img[0].shape[0]
-    dimx = input_img[0].shape[1]
-    img_out = np.zeros((int((dimy-pool_window[0])/stride[0])+1, (int((dimx-pool_window[1])/stride[1])+1), input_img.shape[0]))
-    for iter in range(input_img.shape[0]):
-        print(input_img[1].shape)
-        img_out[:, :, iter] = pooling(input_img[iter], pool_func, pool_window, stride)
+    dimy = input_img.shape[0]
+    dimx = input_img.shape[1]
+    img_out = np.zeros((int((dimy-pool_window[0])/stride[0])+1, (int((dimx-pool_window[1])/stride[1])+1), input_img.shape[2]))
+    for iter in range(input_img.shape[2]):
+        print(input_img.shape)
+        img_out[:, :, iter] = pooling(input_img[:, :, iter], pool_func, pool_window, stride)
     return img_out
 ################################################################################
 ##Testing the conv layer
