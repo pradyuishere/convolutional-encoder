@@ -20,6 +20,13 @@ def conv_layer(input_img, num_kernels, nonlinear_func, kernels, stride = (1, 1),
         img_out[:, :, iter] = conv2d(input_img, kernels[iter], nonlinear_func, stride, pad)
 
     return img_out
+################################################################################
+def pool_layer(input_img, pool_func, pool_window=(1,1), stride = (1,1)):
+    img_out = np.zeros((int((dimy-pool_window[0])/stride[0])+1, (int((dimx-pool_window[1])/stride[1])+1), input_img.shape[2]))
+    for iter in range(input_img.shape[2]):
+        img_out[:, :, iter] = pooling(input_img[:, :, iter], pool_func, pool_window, stride)
+    return img_out
+################################################################################
 
 
 img = cv2.imread('image.png')
