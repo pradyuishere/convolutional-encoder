@@ -60,7 +60,7 @@ def conv2d (input_img, ker, nonlinear_func, stride=(1,1), pad='same'):
     return nonlinear_func(img_out)
 
 def pool_func(img):
-    return img.max()
+    return img.min()
 
 def pooling(input_img, pool_func, pool_window=(1,1), stride = (1,1)):
     dimx = input_img.shape[1]
@@ -74,7 +74,7 @@ def pooling(input_img, pool_func, pool_window=(1,1), stride = (1,1)):
         for iter2 in range(int((dimx-pool_window_x)/stride[1])+1 ):
 	    #print(iter)
 	    #print(iter2)
-            img_out[iter, iter2] =pool_func(img_padded[iter*stride[0]:iter*stride[0]+ker_rev_y, iter2*stride[1]:iter2*stride[1]+ker_rev_x])
+            img_out[iter, iter2] =pool_func(input_img[iter*stride[0]:iter*stride[0]+pool_window_y, iter2*stride[1]:iter2*stride[1]+pool_window_x])
     print(img_out.shape)
     return img_out
 ##
