@@ -23,8 +23,8 @@ def padding (img, dimx, dimy):
 def corr2d (img, ker):
     return np.multiply(img, ker).sum()
 
-def ker(img):
-    return np.zeros(img.shape)
+def nonlinear_func(img):
+    return img
 
 def conv2d (input_img, ker, nonlinear_func, stride=(1,1), padding='same'):
     img_out = []
@@ -50,11 +50,13 @@ def conv2d (input_img, ker, nonlinear_func, stride=(1,1), padding='same'):
         for iter2 in range((dimx-ker_rev.shape[1])/stride[1] + 1):
             img_out[iter, iter2] = corr2d(img[iter*stride[0]:iter*stride[0]+ker_rev_y, iter2*stride[1]:iter2*stride[1]+ker_rev_x], ker_rev)
 
-    return ker(img_out)
+    return nonlinear_func(img_out)
 
 
 ##
 img = mpimg.imread('image.png')
-img_out = padding(img, img.shape[1]+10, img.shape[0]+1000)
+ker = np.ones((10, 10, 3))
+img_out = conv2d(img, ker, nonlinear_func)
+# img_out = padding(img, img.shape[1]+10, img.shape[0]+1000)
 plt.imshow(img_out)
 plt.show()
