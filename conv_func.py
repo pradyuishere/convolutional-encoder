@@ -1,3 +1,4 @@
+import cv2
 import numpy as np
 
 def padding (img, dimx, dimy):
@@ -6,14 +7,14 @@ def padding (img, dimx, dimy):
     dimx_left = int(dimx_zeros/2)
     dimx_right = dimx_zeros-dimx_left
     dimy_top = int(dimy_zeros/2)
-    dimy_down = dimy_zeros-dimx_top
+    dimy_down = dimy_zeros-dimy_top
 
     img_out = np.zeros((dimy, dimx, img.shape[2]))
 
     return img_out
 
 
-def conv2d (input_img, ker, stride=(1,1), padding='same', nonlinear_func):
+def conv2d (input_img, ker, nonlinear_func, stride=(1,1), padding='same'):
     if padding =='same':
         dimy = stride[0]*(input_img.shape[0]-1)+ker.shape[0]
         dimx = stride[1]*(input_img.shape[1]-1)+ker.shape[1]
@@ -21,6 +22,6 @@ def conv2d (input_img, ker, stride=(1,1), padding='same', nonlinear_func):
 ##
 img = cv2.imread('img.jpg', 1)
 img_out = padding(img, img.shape[1], img.shape[0])
-cv2.imshow('image',img)
+cv2.imshow('image',img_out)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
