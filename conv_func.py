@@ -55,13 +55,14 @@ def conv2d (input_img, ker, nonlinear_func, stride=(1,1), pad='same'):
 	    #print(iter)
 	    #print(iter2)
             img_out[iter, iter2] = corr2d(img_padded[iter*stride[0]:iter*stride[0]+ker_rev_y, iter2*stride[1]:iter2*stride[1]+ker_rev_x], ker_rev)
+    print(img_out.shape)
 
     return nonlinear_func(img_out)
 
 
 ##
 img = cv2.imread('image.png')
-ker1 = np.ones((10, 10, 3))
+ker1 = np.ones((10, 10, 3))/300
 print(img.shape)
 img_out1 = conv2d(img, ker1, nonlinear_func)
 
