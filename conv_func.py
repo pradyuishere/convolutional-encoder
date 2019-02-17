@@ -33,12 +33,12 @@ def conv2d (input_img, ker, nonlinear_func, stride=(1,1), pad='same'):
         dimy = stride[0]*(input_img.shape[0]-1)+ker.shape[0]
         dimx = stride[1]*(input_img.shape[1]-1)+ker.shape[1]
         img_padded = padding(input_img, dimx, dimy)
-        img_out = np.zeros(input_img.shape)
+        img_out = np.zeros((img.shape[0], img.shape[1]))
     else:
         dimy = input_img.shape[0]
         dimx = input_img.shape[1]
         img_padded = input_img
-        img_out = np.zeros((dimy-ker.shape[0])/stride[0]+1, (dimx-ker.shape[1])/stride[1]+1)
+        img_out = np.zeros(((dimy-ker.shape[0])/stride[0]+1, (dimx-ker.shape[1])/stride[1]+1))
 
     ker_rev = np.zeros([ker.shape[1], ker.shape[0], ker.shape[2]])
     for iter in range(ker.shape[0]):
@@ -64,8 +64,8 @@ def conv2d (input_img, ker, nonlinear_func, stride=(1,1), pad='same'):
 img = cv2.imread('image.png')
 ker1 = np.ones((10, 10, 3))/300
 print(img.shape)
-img_out1 = conv2d(img, ker1, nonlinear_func)
+img_out1 = conv2d(img, ker1, nonlinear_func, stride = (2, 2), pad = 'valid')
 
 #img_out1 = padding(img, img.shape[1]+10, img.shape[0]+1000)
-plt.imshow(img_out1.astype(int))
+plt.imshow(img_out1.astype(int), cmap = 'gray')
 plt.show()
