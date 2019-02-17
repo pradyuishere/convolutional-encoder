@@ -1,5 +1,7 @@
 import cv2
 import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
 
 def padding (img, dimx, dimy):
     dimx_zeros = dimx - img.shape[1]
@@ -10,13 +12,15 @@ def padding (img, dimx, dimy):
     dimy_down = dimy_zeros-dimy_top
 
     img_out = np.zeros((dimy, dimx, img.shape[2]))
+    img_out[dimy_top:dimy-dimy_down, dimx_left: dimx-dimx_right] = img
+ #   for iter in range(img.shape[0]):
+#        for iter2 in range(img.shape[1]):
+#            img_out[dimy_top+iter, dimx_left+iter2, :] = img[iter, iter2, :]
+  #   	     print(img[iter, iter2, :])
+ #	     print(img_out[iter+dimy_top, iter2+dimx_left, :])
+    print(img.dtype)
 
-    # img_out[dimy_top:dimy-dimy_down, dimx_left: dimx-dimx_right, :] = img
-    for iter in range(img.shape[0]):
-        for iter2 in range(img.shape[1]):
-            img_out[dimy_top+iter, dimx_left+iter2, :] = img[iter, iter2]
-
-    return img_out
+    return img_out.astype(int)
 
 
 def conv2d (input_img, ker, nonlinear_func, stride=(1,1), padding='same'):
@@ -25,8 +29,7 @@ def conv2d (input_img, ker, nonlinear_func, stride=(1,1), padding='same'):
         dimx = stride[1]*(input_img.shape[1]-1)+ker.shape[1]
         img_padded = padding(img, dimx, dimy)
 ##
-img = cv2.imread('img.jpg', 1)
+img = mpimg.imread('img.jpg')
 img_out = padding(img, img.shape[1], img.shape[0])
-cv2.imshow('image',img_out)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
+plt.imshow(img_out)
+plt.show()
