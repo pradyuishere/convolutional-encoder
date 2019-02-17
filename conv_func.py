@@ -50,8 +50,8 @@ def conv2d (input_img, ker, nonlinear_func, stride=(1,1), pad='same'):
     print(ker_rev_y)
     print(ker_rev_x)
     print(img_padded.shape)
-    for iter in range((dimy-ker_rev.shape[0])/stride[0] +1):
-        for iter2 in range((dimx-ker_rev.shape[1])/stride[1]+1 ):
+    for iter in range((int(dimy-ker_rev.shape[0])/stride[0] +1)):
+        for iter2 in range((int(dimx-ker_rev.shape[1])/stride[1]+1 )):
 	    #print(iter)
 	    #print(iter2)
             img_out[iter, iter2] = corr2d(img_padded[iter*stride[0]:iter*stride[0]+ker_rev_y, iter2*stride[1]:iter2*stride[1]+ker_rev_x], ker_rev)
@@ -64,7 +64,7 @@ def conv2d (input_img, ker, nonlinear_func, stride=(1,1), pad='same'):
 img = cv2.imread('image.png')
 ker1 = np.ones((10, 10, 3))/300
 print(img.shape)
-img_out1 = conv2d(img, ker1, nonlinear_func, stride = (2, 2), pad = 'valid')
+img_out1 = conv2d(img, ker1, nonlinear_func, stride = (3, 3), pad = 'valid')
 
 #img_out1 = padding(img, img.shape[1]+10, img.shape[0]+1000)
 plt.imshow(img_out1.astype(int), cmap = 'gray')
