@@ -38,7 +38,7 @@ def conv2d (input_img, ker, nonlinear_func, stride=(1,1), pad='same'):
         dimy = input_img.shape[0]
         dimx = input_img.shape[1]
         img_padded = input_img
-        img_out = np.zeros(((dimy-ker.shape[0])/stride[0]+1, (dimx-ker.shape[1])/stride[1]+1))
+        img_out = np.zeros((int((dimy-ker.shape[0])/stride[0])+1, (int(dimx-ker.shape[1])/stride[1])+1))
 
     ker_rev = np.zeros([ker.shape[1], ker.shape[0], ker.shape[2]])
     for iter in range(ker.shape[0]):
@@ -54,18 +54,35 @@ def conv2d (input_img, ker, nonlinear_func, stride=(1,1), pad='same'):
         for iter2 in range(int((dimx-ker_rev.shape[1])/stride[1])+1 ):
 	    #print(iter)
 	    #print(iter2)
-            img_out[iter, iter2] = corr2d(img_padded[iter*stride[0]:iter*stride[0]+ker_rev_y, iter2*stride[1]:iter2*stride[1]+ker_rev_x], ker_rev)
+            img_out[iter, iter2] =corr2d(img_padded[iter*stride[0]:iter*stride[0]+ker_rev_y, iter2*stride[1]:iter2*stride[1]+ker_rev_x], ker_rev)
     print(img_out.shape)
 
     return nonlinear_func(img_out)
 
+def pool_func(img):
+    return img.max()
 
+def pooling(input_img, pool_func, pool_window=(1,1), stride = (1,1)):
+    dimx = input_img.shape[1]
+    dimy = input_img.shape[0]
+    img_out = np.zeros((int((dimy-pool_window[0])/stride[0])+1, (int(dimx-pool_window[1])/stride[1])+1))
+
+    pool_window_x = pool_window[1]
+    pool_window_y = pool_window[0]
+
+    for iter in range(int((dimy-pool_window_y)/stride[0]) +1):
+        for iter2 in range(int((dimx-pool_window_x)/stride[1])+1 ):
+	    #print(iter)
+	    #print(iter2)
+            img_out[iter, iter2] =pool_func(img_padded[iter*stride[0]:iter*stride[0]+ker_rev_y, iter2*stride[1]:iter2*stride[1]+ker_rev_x])
+    print(img_out.shape)
+    return img_out
 ##
 img = cv2.imread('image.png')
 ker1 = np.ones((10, 10, 3))/300
 print(img.shape)
 img_out1 = conv2d(img, ker1, nonlinear_func, stride = (5, 5), pad = 'valid')
-
+img_out1 = pooling(img_out1, pool_func, pool_window=(2,2), stride = (2,2))
 #img_out1 = padding(img, img.shape[1]+10, img.shape[0]+1000)
 plt.imshow(img_out1.astype(int), cmap = 'gray')
 plt.show()
