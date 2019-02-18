@@ -249,5 +249,6 @@ pool_strides.append(pool_stridel2)
 
 img_out3 = conv_net(img, num_layers, ker_nums, kernels, strides, paddings, nonlinear_funcs, pool_funcs, pool_windows, pool_strides)
 
+print(img_out3)
 plt.imshow(img_out3[:, :, 0], cmap = 'gray')
 plt.show()

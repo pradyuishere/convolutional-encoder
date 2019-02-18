@@ -103,7 +103,16 @@ ker2 = []
 ker2.append(ker1)
 ker2.append(ker12)
 img_out1 = conv_layer(img, 2, nonlinear_func, np.array(ker2),  stride = (5, 5), pad = 'valid')
-print(img_out1.shape)
 
+print(img_out1.shape)
+print("kernel : ", ker2)
+plt.subplot(img_out1.shape[2]+1,1,1)
+plt.imshow(img)
+plt.title("input")
+
+for iter in range(img_out1.shape[2]):
+    plt.subplot(img_out1.shape[2]+1, 1, iter+2)
+    plt.imshow(img_out1[:, :, iter], cmap = 'gray')
+    plt.title("output_img")
 
 plt.show()
