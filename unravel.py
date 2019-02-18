@@ -10,3 +10,6 @@ def unravel(input_img, weight):
 #     print(weight.shape)
     prod = np.matmul(np.transpose(weight), input_col)
     return prod
+
+temp = unravel(img_out3, np.random.rand(img_out3.size, 1024))
+print(temp.shape)
