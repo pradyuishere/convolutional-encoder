@@ -105,10 +105,5 @@ ker2.append(ker12)
 img_out1 = conv_layer(img, 2, nonlinear_func, np.array(ker2),  stride = (5, 5), pad = 'valid')
 print(img_out1.shape)
 
-fig = plt.figure(figsize=(img_out1.shape[0], img_out1.shape[1]))  # width, height in inches
-
-for i in range(img_out1.shape[2]):
-    sub = fig.add_subplot(img_out1.shape[2], 1, i + 1)
-    sub.imshow(img_out1[:,:, i], cmap = 'gray', norm=None)
 
 plt.show()

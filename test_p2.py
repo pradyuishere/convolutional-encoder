@@ -56,5 +56,12 @@ print("Input img size : ",img.shape)
 
 img_out1 = pooling(img, pool_func, pool_window=(2,2), stride = (2,2))
 
+plt.subplot(2,1,1)
+plt.imshow(img, cmap = 'gray')
+plt.title("input")
+
+plt.subplot(2,1,2)
 plt.imshow(img_out1.astype(int), cmap = 'gray')
+plt.title("output_img")
+
 plt.show()

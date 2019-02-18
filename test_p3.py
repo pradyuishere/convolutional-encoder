@@ -74,10 +74,15 @@ def pool_layer(input_img, pool_func, pool_window=(1,1), stride = (1,1)):
 ####Testing the pool_layer
 img = cv2.imread('image.png')
 img_out1 = pool_layer(img, pool_func, pool_window=(2,2), stride = (2,2))
-fig = plt.figure(figsize=(img_out1.shape[0], img_out1.shape[1]))  # width, height in inches
+print(img_out1.shape)
 
-for i in range(img_out1.shape[2]):
-    sub = fig.add_subplot(img_out1.shape[2], 1, i + 1)
-    sub.imshow(img_out1[:,:, i], cmap = 'gray', norm=None)
+plt.subplot(img_out1.shape[2]+1,1,1)
+plt.imshow(img)
+plt.title("input")
+
+for iter in range(img_out1.shape[2]):
+    plt.subplot(img_out1.shape[2]+1, 1, iter+2)
+    plt.imshow(img_out1[:, :, iter], cmap = 'gray')
+    plt.title("output_img")
 
 plt.show()

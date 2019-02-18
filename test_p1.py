@@ -69,6 +69,11 @@ ker1 = np.ones((10, 10, 3))/300
 print("Input img size : ",img.shape)
 
 img_out1 = conv2d(img, ker1, nonlinear_func, stride = (5, 5), pad = 'valid')
-
+print("kernel : ", ker1)
+plt.subplot(2,1,1)
+plt.imshow(img, cmap='gray')
+plt.title("input_img")
+plt.subplot(2,1,2)
 plt.imshow(img_out1.astype(int), cmap = 'gray')
+plt.title("output_img")
 plt.show()
