@@ -3,8 +3,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 
+def sigmoid(x):
+    return 1/(1+np.exp(-x))
+
 def nonlinear_func(img):
-    return img
+    return sigmoid(img)
 
 def softmax(x):
     e_x = np.exp(x-np.max(x))
@@ -25,16 +28,16 @@ def mlp(col_mat_in, num_layers, layer_sizes, weights, biases, activation_funcs):
     return [softmax(prod_out), prod_out]
 
 img = cv2.imread('image.png', 0)
-temp = unravel(img, np.random.rand(img.size, 1024))
+temp = unravel(img, np.random.normal(size = (img.size, 256)))
 num_layers = 2
 biases = []
 weights = []
 
-w1_mlp =  np.random.rand(temp.size, 512)
-w2_mlp =  np.random.rand(512, 10)
+w1_mlp =  np.random.normal(size = (temp.size, 512))
+w2_mlp =  np.random.normal(size=(512, 10))
 
-b1_mlp = np.transpose(np.matrix(np.random.rand(512)))
-b2_mlp = np.transpose(np.matrix(np.random.rand(10)))
+b1_mlp = np.transpose(np.matrix(np.random.normal(size = (512))))
+b2_mlp = np.transpose(np.matrix(np.random.normal(size=(10))))
 
 layer_sizes = []
 layer_sizes.append(512)

@@ -24,8 +24,11 @@ def corr2d (img, ker):
 
 
 
+def sigmoid(x):
+    return 1/(1+np.exp(-x))
+
 def nonlinear_func(img):
-    return img
+    return sigmoid(img)
 
 
 
@@ -176,16 +179,16 @@ ker_nums.append(ker_nums_layer2)
 
 kernels = []
 
-kl1n1 = np.ones((4, 4, 3))
-kl1n2 = np.zeros((4, 4, 3))
+kl1n1 = np.random.normal(size = (4, 4, 3))
+kl1n2 = np.random.normal(size = (4, 4, 3))
 kl1n2[2, 2, :] = 1
 
 kernels.append(kl1n1/kl1n1.sum())
 kernels.append(kl1n2/kl1n2.sum())
 
-kl2n1 = np.random.randint(2, size = (6, 6, 2))
+kl2n1 = np.random.normal(size = (6, 6, 2))
 kl2n2 = np.ones((6, 6, 2))
-kl2n3 = np.random.randint(10, size = (6, 6, 2))
+kl2n3 = np.random.normal( size = (6, 6, 2))
 
 kernels.append(kl2n1/kl2n1.sum())
 kernels.append(kl2n2/kl2n2.sum())

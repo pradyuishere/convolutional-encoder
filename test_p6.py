@@ -12,5 +12,5 @@ def unravel(input_img, weight):
     return prod
 
 img = cv2.imread('image.png', 0)
-temp = unravel(img, np.random.rand(img.size, 1024))
+temp = unravel(img, np.random.normal(size = (img.size, 256)))
 print(temp.shape)

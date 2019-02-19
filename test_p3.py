@@ -16,66 +16,98 @@ def padding (img, dimx, dimy):
 
     return img_out
 
-def pool_func(img):
-    return img.min()
+
+
+def corr2d (img, ker):
+    return np.multiply(img, ker).sum()
 
 
 
-def pooling(input_img, pool_func, pool_window=(1,1), stride = (1,1)):
-    if((input_img.shape[1]-pool_window[1])%stride[1]==0):
-        dimx = input_img.shape[1]
+def sigmoid(x):
+    return 1/(1+np.exp(-x))
+
+def nonlinear_func(img):
+    return sigmoid(img)
+
+
+
+
+def conv2d (input_img, ker, nonlinear_func, stride=(1,1), pad='same'):
+    img_out = []
+    if pad =='same':
+        dimy = stride[0]*(input_img.shape[0]-1)+ker.shape[0]
+        dimx = stride[1]*(input_img.shape[1]-1)+ker.shape[1]
+        img_padded = padding(input_img, dimx, dimy)
+        img_out = np.zeros((input_img.shape[0], input_img.shape[1]))
     else:
-        dimx = input_img.shape[1]+stride[1]-(input_img.shape[1]-pool_window[1])%stride[1]
+        if((input_img.shape[0]-ker.shape[0])%stride[0]==0):
+            dimy = input_img.shape[0]
+        else:
+            dimy = input_img.shape[0]+stride[0]-(input_img.shape[0]-ker.shape[0])%stride[0]
+        if((input_img.shape[1]-ker.shape[1])%stride[1]==0):
+            dimx = input_img.shape[1]
+        else:
+            dimx = input_img.shape[1]+stride[1]-(input_img.shape[1]-ker.shape[1])%stride[1]
 
-    if((input_img.shape[0]-pool_window[0])%stride[0]==0):
-        dimy = input_img.shape[0]
-    else:
-        dimy = input_img.shape[0]+stride[0]-(input_img.shape[0]-pool_window[0])%stride[0]
-    input_pad = np.zeros((input_img.shape[0], input_img.shape[1], 1))
-    input_pad[:, :, 0] = input_img
-    input_img = padding(input_pad, dimx, dimy)
-    img_out = np.zeros((int((dimy-pool_window[0])/stride[0])+1, (int((dimx-pool_window[1])/stride[1])+1)))
+        img_padded = padding(input_img, dimx, dimy)
+        img_out = np.zeros((int((dimy-ker.shape[0])/stride[0])+1, (int((dimx-ker.shape[1])/stride[1])+1)))
 
-    pool_window_x = pool_window[1]
-    pool_window_y = pool_window[0]
+    ker_rev = np.zeros([ker.shape[1], ker.shape[0], ker.shape[2]])
 
-    for iter in range(int((dimy-pool_window_y)/stride[0]) +1):
-        for iter2 in range(int((dimx-pool_window_x)/stride[1])+1 ):
-	    #print(iter)
-	    #print(iter2)
-            img_out[iter, iter2] =pool_func(input_img[iter*stride[0]:iter*stride[0]+pool_window_y, iter2*stride[1]:iter2*stride[1]+pool_window_x])
-#     print(img_out.shape)
+    for iter in range(ker.shape[0]):
+        for iter2 in range(ker.shape[1]):
+            ker_rev[ker.shape[1]-1-iter2, ker.shape[0]-1-iter] = ker[iter, iter2]
+
+    ker_rev_y = ker_rev.shape[0]
+    ker_rev_x = ker_rev.shape[1]
+    for iter in range(int((dimy-ker_rev.shape[0])/stride[0]) +1):
+        for iter2 in range(int((dimx-ker_rev.shape[1])/stride[1])+1 ):
+            img_out[iter, iter2] =corr2d(img_padded[iter*stride[0]:iter*stride[0]+ker_rev_y, iter2*stride[1]:iter2*stride[1]+ker_rev_x], ker_rev)
+
     print("######################################################################")
-    print("output size from the pool_layer : ", img_out.shape)
-    print("pool_window size : ", pool_window)
+    print("output size from the conv_layer : ", img_out.shape)
+    print("ker size : ", ker.shape)
     print("stride : ", stride)
+    print("pad : ", pad)
+    return nonlinear_func(img_out)
+
+
+
+
+def conv_layer(input_img, num_kernels, nonlinear_func, kernels, stride = (1, 1), pad = 'same'):
+    if pad =='same':
+        dimy = stride[0]*(input_img.shape[0]-1)+kernels[0].shape[0]
+        dimx = stride[1]*(input_img.shape[1]-1)+kernels[0].shape[1]
+        img_padded = padding(input_img, dimx, dimy)
+        img_out = np.zeros((input_img.shape[0], input_img.shape[1], num_kernels))
+    else:
+        if((input_img.shape[0]-kernels[0].shape[0])%stride[0]==0):
+            dimy = input_img.shape[0]
+        else:
+            dimy = input_img.shape[0]+stride[0]-(input_img.shape[0]-kernels[0].shape[0])%stride[0]
+        if((input_img.shape[1]-kernels[0].shape[1])%stride[1]==0):
+            dimx = input_img.shape[1]
+        else:
+            dimx = input_img.shape[1]+stride[1]-(input_img.shape[1]-kernels[0].shape[1])%stride[1]
+        img_padded = padding(input_img, dimx, dimy)
+        img_out = np.zeros((int((dimy-kernels[0].shape[0])/stride[0])+1, (int((dimx-kernels[0].shape[1])/stride[1])+1), num_kernels))
+
+    for iter in range(num_kernels):
+        img_out[:, :, iter] = conv2d(input_img, kernels[iter], nonlinear_func, stride, pad)
     return img_out
 
-
-def pool_layer(input_img, pool_func, pool_window=(1,1), stride = (1,1)):
-    if((input_img.shape[1]-pool_window[1])%stride[1]==0):
-        dimx = input_img.shape[1]
-    else:
-        dimx = input_img.shape[1]+stride[1]-(input_img.shape[1]-pool_window[1])%stride[1]
-
-    if((input_img.shape[0]-pool_window[0])%stride[0]==0):
-        dimy = input_img.shape[0]
-    else:
-        dimy = input_img.shape[0]+stride[0]-(input_img.shape[0]-pool_window[0])%stride[0]
-
-    input_img = padding(input_img, dimx, dimy)
-
-    img_out = np.zeros((int((dimy-pool_window[0])/stride[0])+1, (int((dimx-pool_window[1])/stride[1])+1), input_img.shape[2]))
-    for iter in range(input_img.shape[2]):
-#         print(input_img.shape)
-        img_out[:, :, iter] = pooling(input_img[:, :, iter], pool_func, pool_window, stride)
-    return img_out
-
-####Testing the pool_layer
+# ####Testing the conv_layer
 img = cv2.imread('image.png')
-img_out1 = pool_layer(img, pool_func, pool_window=(2,2), stride = (2,2))
-print(img_out1.shape)
+ker1 = np.random.normal(size = (10, 10, 3))
+ker12 = np.random.normal(size = (10, 10, 3))
+# print(ker1)
+ker2 = []
+ker2.append(ker1)
+ker2.append(ker12)
+img_out1 = conv_layer(img, 2, nonlinear_func, np.array(ker2),  stride = (5, 5), pad = 'valid')
 
+print(img_out1.shape)
+print("kernel : ", ker2)
 plt.subplot(img_out1.shape[2]+1,1,1)
 plt.imshow(img)
 plt.title("input")

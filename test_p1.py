@@ -21,8 +21,11 @@ def padding (img, dimx, dimy):
 def corr2d (img, ker):
     return np.multiply(img, ker).sum()
 
+def sigmoid(x):
+    return 1/(1+np.exp(-x))
+
 def nonlinear_func(img):
-    return img
+    return sigmoid(img)
 
 def conv2d (input_img, ker, nonlinear_func, stride=(1,1), pad='same'):
     img_out = []

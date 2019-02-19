@@ -23,8 +23,11 @@ def corr2d (img, ker):
 
 
 
+def sigmoid(x):
+    return 1/(1+np.exp(-x))
+
 def nonlinear_func(img):
-    return img
+    return sigmoid(img)
 
 
 
@@ -194,16 +197,15 @@ ker_nums.append(ker_nums_layer2)
 
 kernels = []
 
-kl1n1 = np.ones((4, 4, 3))
-kl1n2 = np.zeros((4, 4, 3))
-kl1n2[2, 2, :] = 1
+kl1n1 = np.random.normal(size=(4, 4, 3))
+kl1n2 = np.random.normal(size=(4, 4, 3))
 
 kernels.append(kl1n1/kl1n1.sum())
 kernels.append(kl1n2/kl1n2.sum())
 
-kl2n1 = np.random.randint(2, size = (6, 6, 2))
-kl2n2 = np.ones((6, 6, 2))
-kl2n3 = np.random.randint(10, size = (6, 6, 2))
+kl2n1 = np.random.normal( size = (6, 6, 2))
+kl2n2 = np.random.normal(size=(6, 6, 2))
+kl2n3 = np.random.normal( size = (6, 6, 2))
 
 kernels.append(kl2n1/kl2n1.sum())
 kernels.append(kl2n2/kl2n2.sum())
@@ -268,16 +270,16 @@ pool_strides.append(pool_stridel2)
 # print(pool_strides)
 
 img_out3 = conv_net(img, num_layers, ker_nums, kernels, strides, paddings, nonlinear_funcs, pool_funcs, pool_windows, pool_strides)
-temp = unravel(img_out3, np.random.rand(img_out3.size, 1024))
+temp = unravel(img_out3, np.random.normal(size=(img_out3.size, 1024)))
 num_layers = 2
 biases = []
 weights = []
 
-w1_mlp =  np.random.rand(temp.size, 512)
-w2_mlp =  np.random.rand(512, 10)
+w1_mlp =  np.random.normal(size=(temp.size, 512))
+w2_mlp =  np.random.normal(size=(512, 10))
 
-b1_mlp = np.transpose(np.matrix(np.random.rand(512)))
-b2_mlp = np.transpose(np.matrix(np.random.rand(10)))
+b1_mlp = np.transpose(np.matrix(np.random.normal(size=(512))))
+b2_mlp = np.transpose(np.matrix(np.random.normal(size = (10))))
 
 layer_sizes = []
 layer_sizes.append(512)
@@ -296,5 +298,5 @@ activation_funcs.append(nonlinear_func)
 # print(weights[0].dtype)
 
 output_mlp = mlp(temp, num_layers, layer_sizes, weights, biases, activation_funcs)
-print("output with softmax : ", output_mlp[0])
-print("output without softmax : ", output_mlp[1])
+print("output with sigmoid : ", output_mlp[0])
+print("output without sigmoid : ", output_mlp[1])
