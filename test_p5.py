@@ -265,5 +265,5 @@ for iter in range(np.array(img_out3).shape[0]):
         current_count+=1
         plt.subplot(count, 1, current_count)
         plt.imshow(img_out3[iter][:, :, iter2], cmap = 'gray')
-        plt.title("output")
+        plt.title("output at layer : "+str(iter)+", the surface num : "+str(iter2))
 plt.show()
