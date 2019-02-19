@@ -53,4 +53,5 @@ activation_funcs.append(nonlinear_func)
 # print(weights[0].dtype)
 
 output_mlp = mlp(temp, num_layers, layer_sizes, weights, biases, activation_funcs)
-print(output_mlp[0])
+print("output with softmax : ",output_mlp[0])
+print("output without softmax : ", output_mlp[1])
