@@ -67,7 +67,7 @@ def conv2d (input_img, ker, nonlinear_func, stride=(1,1), pad='same'):
     return nonlinear_func(img_out)
 
 img = cv2.imread('image.png')
-ker1 = np.ones((10, 10, 3))/300
+ker1 = np.random.normal(size=(10, 10, 3))
 
 print("Input img size : ",img.shape)
 
