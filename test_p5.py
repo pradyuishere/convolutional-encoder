@@ -154,13 +154,15 @@ def pool_layer(input_img, pool_func, pool_window=(1,1), stride = (1,1)):
 def conv_net(input_img, num_layers, ker_nums, kernels, strides, paddings, nonlinear_funcs, pool_funcs, pool_windows, pool_strides):
     img_out = input_img
     current_ker_count = 0
+    images = []
     for iter in range(num_layers):
         img_out = conv_layer(img_out, ker_nums[iter], nonlinear_funcs[iter], kernels[current_ker_count:current_ker_count+ker_nums[iter]], strides[iter], paddings[iter] )
         current_ker_count = current_ker_count + ker_nums[iter]
         print(img_out.shape)
         img_out = pool_layer(img_out, pool_funcs[iter], pool_windows[iter], pool_strides[iter])
         print(img_out.shape)
-    return img_out
+        images.append(img_out)
+    return images
 
 img = cv2.imread('image.png')
 num_layers = 2
@@ -249,6 +251,19 @@ pool_strides.append(pool_stridel2)
 
 img_out3 = conv_net(img, num_layers, ker_nums, kernels, strides, paddings, nonlinear_funcs, pool_funcs, pool_windows, pool_strides)
 
-print(img_out3)
-plt.imshow(img_out3[:, :, 0], cmap = 'gray')
+count = 1
+for iter in range(np.array(img_out3).shape[0]):
+    for iter2 in range(img_out3[iter].shape[2]):
+        count+=1
+
+plt.subplot(count, 1, 1)
+plt.imshow(img)
+plt.title("input")
+current_count = 1
+for iter in range(np.array(img_out3).shape[0]):
+    for iter2 in range(img_out3[iter].shape[2]):
+        current_count+=1
+        plt.subplot(count, 1, current_count)
+        plt.imshow(img_out3[iter][:, :, iter2], cmap = 'gray')
+        plt.title("output")
 plt.show()
