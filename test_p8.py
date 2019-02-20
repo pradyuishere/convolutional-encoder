@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 
+
 def padding (img, dimx, dimy):
     dimx_zeros = dimx - img.shape[1]
     dimy_zeros = dimy - img.shape[0]
@@ -29,10 +30,13 @@ def sigmoid(x):
 def nonlinear_func(img):
     return sigmoid(img)
 
+def linear_func(img):
+    return img
 
 
 
-def conv2d (input_img, ker, nonlinear_func, stride=(1,1), pad='same'):
+
+def conv2d (input_img, ker, bias, nonlinear_func, stride=(1,1), pad='same'):
     img_out = []
     if pad =='same':
         dimy = stride[0]*(input_img.shape[0]-1)+ker.shape[0]
@@ -69,12 +73,12 @@ def conv2d (input_img, ker, nonlinear_func, stride=(1,1), pad='same'):
     print("ker size : ", ker.shape)
     print("stride : ", stride)
     print("pad : ", pad)
-    return nonlinear_func(img_out)
+    return nonlinear_func(img_out+bias)
 
 
 
 
-def conv_layer(input_img, num_kernels, nonlinear_func, kernels, stride = (1, 1), pad = 'same'):
+def conv_layer(input_img, num_kernels, nonlinear_func, kernels, biases, stride = (1, 1), pad = 'same'):
     if pad =='same':
         dimy = stride[0]*(input_img.shape[0]-1)+kernels[0].shape[0]
         dimx = stride[1]*(input_img.shape[1]-1)+kernels[0].shape[1]
@@ -93,9 +97,9 @@ def conv_layer(input_img, num_kernels, nonlinear_func, kernels, stride = (1, 1),
         img_out = np.zeros((int((dimy-kernels[0].shape[0])/stride[0])+1, (int((dimx-kernels[0].shape[1])/stride[1])+1), num_kernels))
 
     for iter in range(num_kernels):
-        img_out[:, :, iter] = conv2d(input_img, kernels[iter], nonlinear_func, stride, pad)
-        print("conv_layer ker num : ", iter)
+        img_out[:, :, iter] = conv2d(input_img, kernels[iter], biases[iter], nonlinear_func, stride, pad)
     return img_out
+
 
 
 def pool_func(img):
@@ -151,24 +155,22 @@ def pool_layer(input_img, pool_func, pool_window=(1,1), stride = (1,1)):
     for iter in range(input_img.shape[2]):
 #         print(input_img.shape)
         img_out[:, :, iter] = pooling(input_img[:, :, iter], pool_func, pool_window, stride)
-    print("pool_layer num : ", iter)
     return img_out
 
 
-def conv_net(input_img, num_layers, ker_nums, kernels, strides, paddings, nonlinear_funcs, pool_funcs, pool_windows, pool_strides):
+def conv_net(input_img, num_layers, ker_nums, kernels, biases, strides, paddings, nonlinear_funcs, pool_funcs, pool_windows, pool_strides):
     img_out = input_img
     current_ker_count = 0
     for iter in range(num_layers):
-        print("\n\n\nconv_net batch : ",iter)
-        img_out = conv_layer(img_out, ker_nums[iter], nonlinear_funcs[iter], kernels[current_ker_count:current_ker_count+ker_nums[iter]], strides[iter], paddings[iter] )
+        img_out = conv_layer(img_out, ker_nums[iter], nonlinear_funcs[iter], kernels[current_ker_count:current_ker_count+ker_nums[iter]], biases[current_ker_count:current_ker_count+ker_nums[iter]], strides[iter], paddings[iter] )
         current_ker_count = current_ker_count + ker_nums[iter]
-#         print(img_out.shape)
+        # print(img_out.shape)
         img_out = pool_layer(img_out, pool_funcs[iter], pool_windows[iter], pool_strides[iter])
-#         print(img_out.shape)
+        # print(img_out.shape)
     return img_out
 
 def softmax(x):
-    e_x = np.exp(x-np.max(x))
+    e_x = np.exp(x)
     return e_x / e_x.sum()
 
 def unravel(input_img, weight):
@@ -268,11 +270,38 @@ pool_strides.append(pool_stridel1)
 pool_strides.append(pool_stridel2)
 
 # print(pool_strides)
-
-img_out3 = conv_net(img, num_layers, ker_nums, kernels, strides, paddings, nonlinear_funcs, pool_funcs, pool_windows, pool_strides)
-temp = unravel(img_out3, np.random.normal(size=(img_out3.size, 1024)))
-num_layers = 2
 biases = []
+
+################################################################################
+shapey = 0
+shapex = 0
+
+for ker1 in kernels[0:ker_nums_layer1]:
+
+    shapey = 331
+    shapex = 499
+    bias = np.random.normal(size=(shapey, shapex))
+#     print(ker1.shape)
+    biases.append(bias)
+
+for ker1 in kernels[ker_nums_layer1:ker_nums_layer2+ker_nums_layer1]:
+    shapey = 54
+    shapex = 82
+
+    bias = np.random.normal(size=(shapey, shapex))
+    print(ker1.shape)
+    biases.append(bias)
+
+for iter in range(np.array(biases).shape[0]):
+    print(biases[iter].shape)
+################################################################################
+
+img_out3 = conv_net(img, num_layers, ker_nums, kernels, biases, strides, paddings, nonlinear_funcs, pool_funcs, pool_windows, pool_strides)
+
+
+temp = unravel(img_out3, np.random.normal(size=(img_out3.size, 256)))
+num_layers = 2
+biases1 = []
 weights = []
 
 w1_mlp =  np.random.normal(size=(temp.size, 512))
@@ -285,18 +314,18 @@ layer_sizes = []
 layer_sizes.append(512)
 layer_sizes.append(10)
 
-biases.append(b1_mlp)
-biases.append(b2_mlp)
+biases1.append(b1_mlp)
+biases1.append(b2_mlp)
 
 weights.append(w1_mlp)
 weights.append(w2_mlp)
 
 activation_funcs = []
 activation_funcs.append(nonlinear_func)
-activation_funcs.append(nonlinear_func)
+activation_funcs.append(linear_func)
 
 # print(weights[0].dtype)
 
-output_mlp = mlp(temp, num_layers, layer_sizes, weights, biases, activation_funcs)
-print("output with sigmoid : ", output_mlp[0])
-print("output without sigmoid : ", output_mlp[1])
+output_mlp = mlp(temp, num_layers, layer_sizes, weights, biases1, activation_funcs)
+print("output with softmax : ", output_mlp[0])
+print("output without softmax : ", output_mlp[1])
