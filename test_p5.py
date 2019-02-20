@@ -33,7 +33,7 @@ def nonlinear_func(img):
 
 
 
-def conv2d (input_img, ker, nonlinear_func, stride=(1,1), pad='same'):
+def conv2d (input_img, ker, bias, nonlinear_func, stride=(1,1), pad='same'):
     img_out = []
     if pad =='same':
         dimy = stride[0]*(input_img.shape[0]-1)+ker.shape[0]
@@ -70,12 +70,12 @@ def conv2d (input_img, ker, nonlinear_func, stride=(1,1), pad='same'):
     print("ker size : ", ker.shape)
     print("stride : ", stride)
     print("pad : ", pad)
-    return nonlinear_func(img_out)
+    return nonlinear_func(img_out+bias)
 
 
 
 
-def conv_layer(input_img, num_kernels, nonlinear_func, kernels, stride = (1, 1), pad = 'same'):
+def conv_layer(input_img, num_kernels, nonlinear_func, kernels, biases, stride = (1, 1), pad = 'same'):
     if pad =='same':
         dimy = stride[0]*(input_img.shape[0]-1)+kernels[0].shape[0]
         dimx = stride[1]*(input_img.shape[1]-1)+kernels[0].shape[1]
@@ -94,8 +94,9 @@ def conv_layer(input_img, num_kernels, nonlinear_func, kernels, stride = (1, 1),
         img_out = np.zeros((int((dimy-kernels[0].shape[0])/stride[0])+1, (int((dimx-kernels[0].shape[1])/stride[1])+1), num_kernels))
 
     for iter in range(num_kernels):
-        img_out[:, :, iter] = conv2d(input_img, kernels[iter], nonlinear_func, stride, pad)
+        img_out[:, :, iter] = conv2d(input_img, kernels[iter], biases[iter], nonlinear_func, stride, pad)
     return img_out
+
 
 
 def pool_func(img):
@@ -154,12 +155,12 @@ def pool_layer(input_img, pool_func, pool_window=(1,1), stride = (1,1)):
     return img_out
 
 
-def conv_net(input_img, num_layers, ker_nums, kernels, strides, paddings, nonlinear_funcs, pool_funcs, pool_windows, pool_strides):
+def conv_net(input_img, num_layers, ker_nums, kernels, biases, strides, paddings, nonlinear_funcs, pool_funcs, pool_windows, pool_strides):
     img_out = input_img
     current_ker_count = 0
     images = []
     for iter in range(num_layers):
-        img_out = conv_layer(img_out, ker_nums[iter], nonlinear_funcs[iter], kernels[current_ker_count:current_ker_count+ker_nums[iter]], strides[iter], paddings[iter] )
+        img_out = conv_layer(img_out, ker_nums[iter], nonlinear_funcs[iter], kernels[current_ker_count:current_ker_count+ker_nums[iter]], biases[current_ker_count:current_ker_count+ker_nums[iter]], strides[iter], paddings[iter] )
         current_ker_count = current_ker_count + ker_nums[iter]
         print(img_out.shape)
         img_out = pool_layer(img_out, pool_funcs[iter], pool_windows[iter], pool_strides[iter])
@@ -252,7 +253,33 @@ pool_strides.append(pool_stridel2)
 
 # print(pool_strides)
 
-img_out3 = conv_net(img, num_layers, ker_nums, kernels, strides, paddings, nonlinear_funcs, pool_funcs, pool_windows, pool_strides)
+biases = []
+
+################################################################################
+shapey = 0
+shapex = 0
+
+for ker1 in kernels[0:ker_nums_layer1]:
+
+    shapey = 331
+    shapex = 499
+    bias = np.random.normal(size=(shapey, shapex))
+#     print(ker1.shape)
+    biases.append(bias)
+
+for ker1 in kernels[ker_nums_layer1:ker_nums_layer2+ker_nums_layer1]:
+    shapey = 54
+    shapex = 82
+
+    bias = np.random.normal(size=(shapey, shapex))
+    print(ker1.shape)
+    biases.append(bias)
+
+for iter in range(np.array(biases).shape[0]):
+    print(biases[iter].shape)
+################################################################################
+
+img_out3 = conv_net(img, num_layers, ker_nums, kernels, biases, strides, paddings, nonlinear_funcs, pool_funcs, pool_windows, pool_strides)
 
 count = 1
 for iter in range(np.array(img_out3).shape[0]):
