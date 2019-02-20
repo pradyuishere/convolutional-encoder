@@ -27,7 +27,7 @@ def sigmoid(x):
 def nonlinear_func(img):
     return sigmoid(img)
 
-def conv2d (input_img, ker, nonlinear_func, stride=(1,1), pad='same'):
+def conv2d (input_img, ker, bias, nonlinear_func, stride=(1,1), pad='same'):
     img_out = []
     if pad =='same':
         dimy = stride[0]*(input_img.shape[0]-1)+ker.shape[0]
@@ -64,14 +64,30 @@ def conv2d (input_img, ker, nonlinear_func, stride=(1,1), pad='same'):
     print("ker size : ", ker.shape)
     print("stride : ", stride)
     print("pad : ", pad)
-    return nonlinear_func(img_out)
+    return nonlinear_func(img_out+bias)
 
 img = cv2.imread('image.png')
-ker1 = np.ones((10, 10, 3))/300
+ker1 = np.random.normal(size=(10, 10, 3))
+
+shapey = 0
+shapex = 0
+
+if (img.shape[0]-ker1.shape[0])%5==0:
+    shapey = int((img.shape[0]-ker1.shape[0])/5)+1
+else:
+    shapey = int((img.shape[0]-ker1.shape[0])/5)+2
+
+if (img.shape[1]-ker1.shape[1])%5==0:
+    shapex = int((img.shape[1]-ker1.shape[1])/5)+1
+else:
+    shapex = int((img.shape[1]-ker1.shape[1])/5)+2
+
+bias = np.random.normal(size=(shapey, shapex))
+# print(int((img.shape[0]-ker1.shape[0])/5)+1)
 
 print("Input img size : ",img.shape)
 
-img_out1 = conv2d(img, ker1, nonlinear_func, stride = (5, 5), pad = 'valid')
+img_out1 = conv2d(img, ker1, bias, nonlinear_func, stride = (5, 5), pad = 'valid')
 print("kernel : ", ker1)
 plt.subplot(2,1,1)
 plt.imshow(img, cmap='gray')
