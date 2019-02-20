@@ -9,8 +9,11 @@ def sigmoid(x):
 def nonlinear_func(img):
     return sigmoid(img)
 
+def linear_func(img):
+    return img
+
 def softmax(x):
-    e_x = np.exp(x-np.max(x))
+    e_x = np.exp(x)
     return e_x / e_x.sum()
 
 def unravel(input_img, weight):
@@ -51,7 +54,7 @@ weights.append(w2_mlp)
 
 activation_funcs = []
 activation_funcs.append(nonlinear_func)
-activation_funcs.append(nonlinear_func)
+activation_funcs.append(linear_func)
 
 # print(weights[0].dtype)
 
