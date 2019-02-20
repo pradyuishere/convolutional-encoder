@@ -32,7 +32,7 @@ def nonlinear_func(img):
 
 
 
-def conv2d (input_img, ker, nonlinear_func, stride=(1,1), pad='same'):
+def conv2d (input_img, ker, bias, nonlinear_func, stride=(1,1), pad='same'):
     img_out = []
     if pad =='same':
         dimy = stride[0]*(input_img.shape[0]-1)+ker.shape[0]
@@ -69,12 +69,12 @@ def conv2d (input_img, ker, nonlinear_func, stride=(1,1), pad='same'):
     print("ker size : ", ker.shape)
     print("stride : ", stride)
     print("pad : ", pad)
-    return nonlinear_func(img_out)
+    return nonlinear_func(img_out+bias)
 
 
 
 
-def conv_layer(input_img, num_kernels, nonlinear_func, kernels, stride = (1, 1), pad = 'same'):
+def conv_layer(input_img, num_kernels, nonlinear_func, kernels, biases, stride = (1, 1), pad = 'same'):
     if pad =='same':
         dimy = stride[0]*(input_img.shape[0]-1)+kernels[0].shape[0]
         dimx = stride[1]*(input_img.shape[1]-1)+kernels[0].shape[1]
@@ -93,7 +93,7 @@ def conv_layer(input_img, num_kernels, nonlinear_func, kernels, stride = (1, 1),
         img_out = np.zeros((int((dimy-kernels[0].shape[0])/stride[0])+1, (int((dimx-kernels[0].shape[1])/stride[1])+1), num_kernels))
 
     for iter in range(num_kernels):
-        img_out[:, :, iter] = conv2d(input_img, kernels[iter], nonlinear_func, stride, pad)
+        img_out[:, :, iter] = conv2d(input_img, kernels[iter], biases[iter], nonlinear_func, stride, pad)
     return img_out
 
 # ####Testing the conv_layer
@@ -104,7 +104,28 @@ ker12 = np.random.normal(size = (10, 10, 3))
 ker2 = []
 ker2.append(ker1)
 ker2.append(ker12)
-img_out1 = conv_layer(img, 2, nonlinear_func, np.array(ker2),  stride = (5, 5), pad = 'valid')
+
+biases = []
+
+for ker1 in ker2:
+    shapey = 0
+    shapex = 0
+
+    if (img.shape[0]-ker1.shape[0])%5==0:
+        shapey = int((img.shape[0]-ker1.shape[0])/5)+1
+    else:
+        shapey = int((img.shape[0]-ker1.shape[0])/5)+2
+
+    if (img.shape[1]-ker1.shape[1])%5==0:
+        shapex = int((img.shape[1]-ker1.shape[1])/5)+1
+    else:
+        shapex = int((img.shape[1]-ker1.shape[1])/5)+2
+
+    bias = np.random.normal(size=(shapey, shapex))
+    biases.append(bias)
+
+
+img_out1 = conv_layer(img, 2, nonlinear_func, np.array(ker2), np.array(biases), stride = (5, 5), pad = 'valid')
 
 print(img_out1.shape)
 print("kernel : ", ker2)
