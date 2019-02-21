@@ -64,7 +64,7 @@ def conv2d (input_img, ker, bias, nonlinear_func, stride=(1,1), pad='same'):
     print("ker size : ", ker.shape)
     print("stride : ", stride)
     print("pad : ", pad)
-    return nonlinear_func(img_out+bias)
+    return nonlinear_func(img_out+np.ones(img_out.shape)*bias)
 
 img = cv2.imread('image.png')
 ker1 = np.random.normal(size=(10, 10, 3))
@@ -82,8 +82,7 @@ if (img.shape[1]-ker1.shape[1])%5==0:
 else:
     shapex = int((img.shape[1]-ker1.shape[1])/5)+2
 
-bias = np.random.normal(size=(shapey, shapex))
-# print(int((img.shape[0]-ker1.shape[0])/5)+1)
+bias = 3
 
 print("Input img size : ",img.shape)
 
