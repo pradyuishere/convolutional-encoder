@@ -73,7 +73,7 @@ def conv2d (input_img, ker, bias, nonlinear_func, stride=(1,1), pad='same'):
     print("ker size : ", ker.shape)
     print("stride : ", stride)
     print("pad : ", pad)
-    return nonlinear_func(img_out+bias)
+    return nonlinear_func(img_out+np.ones(img_out.shape)*bias)
 
 
 
@@ -270,30 +270,30 @@ pool_strides.append(pool_stridel1)
 pool_strides.append(pool_stridel2)
 
 # print(pool_strides)
-biases = []
+biases = np.random.normal(size = (ker_nums_layer1+ker_nums_layer2))
 
 ################################################################################
-shapey = 0
-shapex = 0
-
-for ker1 in kernels[0:ker_nums_layer1]:
-
-    shapey = 331
-    shapex = 499
-    bias = np.random.normal(size=(shapey, shapex))
+# shapey = 0
+# shapex = 0
+#
+# for ker1 in kernels[0:ker_nums_layer1]:
+#
+#     shapey = 331
+#     shapex = 499
+#     bias = np.random.normal(size=(shapey, shapex))
+# #     print(ker1.shape)
+#     biases.append(bias)
+#
+# for ker1 in kernels[ker_nums_layer1:ker_nums_layer2+ker_nums_layer1]:
+#     shapey = 54
+#     shapex = 82
+#
+#     bias = np.random.normal(size=(shapey, shapex))
 #     print(ker1.shape)
-    biases.append(bias)
-
-for ker1 in kernels[ker_nums_layer1:ker_nums_layer2+ker_nums_layer1]:
-    shapey = 54
-    shapex = 82
-
-    bias = np.random.normal(size=(shapey, shapex))
-    print(ker1.shape)
-    biases.append(bias)
-
-for iter in range(np.array(biases).shape[0]):
-    print(biases[iter].shape)
+#     biases.append(bias)
+#
+# for iter in range(np.array(biases).shape[0]):
+#     print(biases[iter].shape)
 ################################################################################
 
 img_out3 = conv_net(img, num_layers, ker_nums, kernels, biases, strides, paddings, nonlinear_funcs, pool_funcs, pool_windows, pool_strides)
