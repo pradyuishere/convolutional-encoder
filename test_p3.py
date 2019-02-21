@@ -69,7 +69,7 @@ def conv2d (input_img, ker, bias, nonlinear_func, stride=(1,1), pad='same'):
     print("ker size : ", ker.shape)
     print("stride : ", stride)
     print("pad : ", pad)
-    return nonlinear_func(img_out+bias)
+    return nonlinear_func(img_out+np.ones(img_out.shape)*bias)
 
 
 
@@ -105,24 +105,24 @@ ker2 = []
 ker2.append(ker1)
 ker2.append(ker12)
 
-biases = []
 
-for ker1 in ker2:
-    shapey = 0
-    shapex = 0
 
-    if (img.shape[0]-ker1.shape[0])%5==0:
-        shapey = int((img.shape[0]-ker1.shape[0])/5)+1
-    else:
-        shapey = int((img.shape[0]-ker1.shape[0])/5)+2
+# for ker1 in ker2:
+#     shapey = 0
+#     shapex = 0
+#
+#     if (img.shape[0]-ker1.shape[0])%5==0:
+#         shapey = int((img.shape[0]-ker1.shape[0])/5)+1
+#     else:
+#         shapey = int((img.shape[0]-ker1.shape[0])/5)+2
+#
+#     if (img.shape[1]-ker1.shape[1])%5==0:
+#         shapex = int((img.shape[1]-ker1.shape[1])/5)+1
+#     else:
+#         shapex = int((img.shape[1]-ker1.shape[1])/5)+2
+#
 
-    if (img.shape[1]-ker1.shape[1])%5==0:
-        shapex = int((img.shape[1]-ker1.shape[1])/5)+1
-    else:
-        shapex = int((img.shape[1]-ker1.shape[1])/5)+2
-
-    bias = np.random.normal(size=(shapey, shapex))
-    biases.append(bias)
+biases = np.random.normal(size = (2))
 
 
 img_out1 = conv_layer(img, 2, nonlinear_func, np.array(ker2), np.array(biases), stride = (5, 5), pad = 'valid')
