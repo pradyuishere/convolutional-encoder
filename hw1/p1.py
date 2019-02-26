@@ -8,4 +8,3 @@ X_test  = np.vstack([img.reshape(28, 28) for img in mnist.test.images])
 Y_test  = mnist.test.labels
 
 del mnist
-s
