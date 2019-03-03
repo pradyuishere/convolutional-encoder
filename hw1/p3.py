@@ -87,21 +87,95 @@ pool_strides.append((2, 2))
 pool_strides.append((2, 2))
 ################################################################################
 ##Unravel weights setup
-weight_unravel = np.random.normal(size = [3136, 1024])
-bias_unravel   = np.random.normal(size = [1024, 1])
-################################################################################
-##MLP weights setup
-num_layers = 1
+weight_dense = np.random.normal(size = [3136, 1024])
+bias_dense   = np.random.normal(size = [1024, 1])
+
+num_layers = 2
 
 layer_sizes = []
+layer_sizes.append(1024)
 layer_sizes.append(10)
 
 weights = []
+weights.append(weight_dense)
 weights.append(np.random.normal(size = [1024, 10]))
 
 biases = []
+biases.append(bias_dense)
 biases.append(np.random.normal(size = [10, 1]))
 
 activation_funcs = []
+activation_funcs.append(relu)
 activation_funcs.append(linear_func)
 ################################################################################
+##function to calculate the end_errors
+
+def end_error(outputs, train_out):
+    return train_out-outputs
+
+################################################################################
+##function to calculate the cost, cross_entropy
+
+def cost_cross_entropy(outputs, train_out):
+    costs = np.zeros(outputs.shape)
+    for iter in range(costs.size):
+        if(train_out[iter]==1):
+            costs[iter] = -np.log(outputs[iter])
+        else:
+            costs[iter] = -np.log(1-outputs[iter])
+    return costs.sum()
+
+################################################################################
+
+
+
+################################################################################
+##Find the grads of weights and biases of the mlp, remember to calculate the inputs_mlp
+def grads_one_epoch_weights_mlp_soft(end_error,
+    weights,
+    biases,
+    activation_funcs,
+    activation_funcs_der,
+    inputs_mlp):
+
+    weights_del = []
+    for iter in range(weights.shape[0]-1):
+        weights_del_temp = np.matmul(np.multiply(end_error, activation_funcs_der(weights[weights.shape[0]-1-iter]), inputs_mlp[weights.shape[0]-1-iter])
+        end_error = np.matmul(weights[weights.shape[0]-1-iter], np.multiply(end_error, activation_funcs_der(weights[weights.shape[0]-1-iter])))
+        weights_del.append(weights_del_temp)
+    weights_del1 = []
+    for iter in range(weights.shape[0]-1):
+        weights_del1.append(weights_del[weights_del.shape[0]-1-iter])
+    return np.array(weights_del1)
+
+def grads_one_epoch_biases_mlp_soft(end_error,
+    weights,
+    biases,
+    activation_funcs,
+    activation_funcs_der,
+    inputs_mlp):
+
+    biases_del = []
+    for iter in range(weights.shape[0]-1):
+        weights_del_temp = np.matmul(np.multiply(end_error, activation_funcs_der(weights[weights.shape[0]-1-iter]), inputs_mlp[weights.shape[0]-1-iter]))
+        biases_del_temp  = np.multiply(end_error, activation_funcs_der(weights[weights.shape[0]-1-iter]), inputs_mlp[weights.shape[0]-1-iter])
+        end_error = np.matmul(weights[weights.shape[0]-1-iter], np.multiply(end_error, activation_funcs_der(weights[weights.shape[0]-1-iter])))
+        biases_del.append(biases_del_temp)
+    biases_del1 = []
+    for iter in range(weights.shape[0]-1):
+        biases_del1.append(weights_del[weights_del.shape[0]-1-iter])
+    return np.array(biases_del1)
+################################################################################
+##Ravel function
+def ravel(input, size):
+    return np.reshape(input, size)
+################################################################################
+##Backprop conv_layer
+
+def conv_back_one_epock_one_ker(error_img,
+    input_img,
+    bias,
+    non_linear_func,
+    non_linear_func_der):
+
+    bias_del = conv2d(input_img, error_img, bias)
