@@ -1,5 +1,6 @@
 import numpy as np
 from tensorflow.examples.tutorials.mnist import input_data
+from set_of_functions import *
 
 mnist = input_data.read_data_sets("MNIST_data/", one_hot = True)
 X_train_temp = np.vstack([img.reshape((28, 28)) for img in mnist.train.images])
@@ -28,8 +29,8 @@ ker_nums_layer1 = 32
 ker_nums_layer2 = 64
 
 ker_nums = []
-ker_nums.append(ker_dim_layer1)
-ker_nums.append(ker_dim_layer2)
+ker_nums.append(ker_nums_layer1)
+ker_nums.append(ker_nums_layer2)
 
 kernels = []
 
@@ -43,7 +44,7 @@ for iter in range(ker_nums_layer1):
     biases.append(np.random.normal())
 
 for iter in range(ker_nums_layer2):
-    kernels.append(np.random.normal(size = [ker_dim_layer2, ker_dim_layer2, ker_dim_layer1]))
+    kernels.append(np.random.normal(size = [ker_dim_layer2, ker_dim_layer2, ker_nums_layer1]))
     biases.append(np.random.normal())
 
 strides = []
@@ -145,13 +146,22 @@ for iter in range(num_epoch):
         grad_conv_2 = []
         unpool_layer_2_mask = np.equal(img_conv_2, img_pool_2.repeat(2, axis = 0).repeat(2, axis = 1))
         cc_err_back_layer2 = np.multiply(unpool_layer_2_mask, cc_err_out.repeat(2, axis = 0).repeat(2, axis = 1))
+
+        der_temp_img = conv_layer(img_pool_1, ker_nums_layer2, ReLU, kernels[ker_nums_layer1:ker_nums_layer2], biases[ker_nums_layer1:ker_nums_layer2], stride = (1, 1), pad = 'same')
+
         for iter in range(ker_nums_layer2):
             grads_1 = np.zeros([5, 5, ker_nums_layer1])
             for iter2 in range(ker_nums_layer1):
-                grads_1[:, :, iter2] = (conv2d(img_pool_1[:, :, iter2], np.rot90(np.multiply(der_ReLU(img_conv_2[:, :, iter]), cc_err_out[:, :, iter]), 2), linear_func, (1,1), 'valid'))
+                grads_1[:, :, iter2] = (conv2d(padding(img_pool_1[:, :, iter2], 18, 18), (np.multiply(der_ReLU(der_temp_img[:, :, iter]), cc_err_back_layer2[:, :, iter]), 2), linear_func, (1,1), 'valid'))
             grad_conv_2.append(grads_1)
 
         biases_conv_2 = []
         for iter in range(ker_nums_layer2):
-            biases_conv_2.append(np.multiply(der_ReLU(img_conv_2[:, :, iter]), cc_err_out[:, :, iter]))
-        
+            biases_conv_2.append(np.multiply(der_ReLU(der_temp_img[:, :, iter]), cc_err_back_layer2[:, :, iter]))
+
+        error_back_layer1 = np.zeros(14, 14, ker_nums_layer1)
+        for iter in range(ker_nums_layer1):
+            this_ker_new = np.zeros(5, 5, ker_nums_layer2)
+            for iter2 in range(ker_nums_layer2):
+                this_ker_new[:, :, iter2] = kernels[ker_nums_layer1+iter2][:, :, iter]
+            error_back_layer1[:, :, iter] = conv2d(padding(cc_err_back_layer2, 18, 18), this_ker_new, linear_func, (1, 1), 'valid')

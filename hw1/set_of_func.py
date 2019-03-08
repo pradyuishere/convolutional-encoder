@@ -56,11 +56,11 @@ def conv2d (input_img, ker, bias, nonlinear_func, stride=(1,1), pad='same'):
         img_padded = padding(input_img, dimx, dimy)
         img_out = np.zeros((int((dimy-ker.shape[0])/stride[0])+1, (int((dimx-ker.shape[1])/stride[1])+1)))
 
-    ker_rev = np.zeros([ker.shape[1], ker.shape[0], ker.shape[2]])
+    ker_rev = ker
 
-    for iter in range(ker.shape[0]):
-        for iter2 in range(ker.shape[1]):
-            ker_rev[ker.shape[1]-1-iter2, ker.shape[0]-1-iter] = ker[iter, iter2]
+    # for iter in range(ker.shape[0]):
+    #     for iter2 in range(ker.shape[1]):
+    #         ker_rev[ker.shape[1]-1-iter2, ker.shape[0]-1-iter] = ker[iter, iter2]
 
     ker_rev_y = ker_rev.shape[0]
     ker_rev_x = ker_rev.shape[1]
@@ -68,11 +68,11 @@ def conv2d (input_img, ker, bias, nonlinear_func, stride=(1,1), pad='same'):
         for iter2 in range(int((dimx-ker_rev.shape[1])/stride[1])+1 ):
             img_out[iter, iter2] =corr2d(img_padded[iter*stride[0]:iter*stride[0]+ker_rev_y, iter2*stride[1]:iter2*stride[1]+ker_rev_x], ker_rev)
 
-    print("######################################################################")
-    print("output size from the conv_layer : ", img_out.shape)
-    print("ker size : ", ker.shape)
-    print("stride : ", stride)
-    print("pad : ", pad)
+#     print("######################################################################")
+#     print("output size from the conv_layer : ", img_out.shape)
+#     print("ker size : ", ker.shape)
+#     print("stride : ", stride)
+#     print("pad : ", pad)
     return nonlinear_func(img_out+np.ones(img_out.shape)*bias)
 
 
@@ -131,10 +131,10 @@ def pooling(input_img, pool_func, pool_window=(1,1), stride = (1,1)):
 	    #print(iter2)
             img_out[iter, iter2] =pool_func(input_img[iter*stride[0]:iter*stride[0]+pool_window_y, iter2*stride[1]:iter2*stride[1]+pool_window_x])
 #     print(img_out.shape)
-    print("######################################################################")
-    print("output size from the pool_layer : ", img_out.shape)
-    print("pool_window size : ", pool_window)
-    print("stride : ", stride)
+#     print("######################################################################")
+#     print("output size from the pool_layer : ", img_out.shape)
+#     print("pool_window size : ", pool_window)
+#     print("stride : ", stride)
     return img_out
 
 
